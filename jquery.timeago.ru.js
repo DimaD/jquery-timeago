@@ -17,9 +17,9 @@
 
   jQuery.timeago.settings.strings = {
     prefixAgo: null,
-    prefixFromNow: null,
+    prefixFromNow: "через",
     suffixAgo: "назад",
-    suffixFromNow: "через",
+    suffixFromNow: null,
     ago: null, // DEPRECATED, use suffixAgo
     fromNow: null, // DEPRECATED, use suffixFromNow
     seconds: "меньше минуты",
