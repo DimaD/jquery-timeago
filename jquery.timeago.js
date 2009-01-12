@@ -95,8 +95,7 @@
     },
     translate_string: function(key, val) {
       var str = this.settings.strings[key];
-      console.log(key, str, val, isFunction(str));
-      return (isFunction(str) ? str.apply(this, val) : str);
+      return (isFunction(str) ? str.call(this, val) : str);
     }
   });
 
