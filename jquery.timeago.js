@@ -46,13 +46,14 @@
       }
     },
     inWords: function(distanceMillis) {
-      var $l = this.settings.strings;
-      var prefix = $l.prefixAgo;
-      var suffix = $l.suffixAgo || $l.ago;
+      var $l = function(key, v) { return $.timeago.translate_string(key, v) };
+      var $ls = this.settings.strings;
+      var prefix = $ls.prefixAgo;
+      var suffix = $ls.suffixAgo || $ls.ago;
       if (this.settings.allowFuture) {
         if (distanceMillis < 0) {
-          prefix = $l.prefixFromNow;
-          suffix = $l.suffixFromNow || $l.fromNow;
+          prefix = $ls.prefixFromNow;
+          suffix = $ls.suffixFromNow || $ls.fromNow;
         }
         distanceMillis = Math.abs(distanceMillis);
       }
@@ -63,17 +64,25 @@
       var days = hours / 24;
       var years = days / 365;
 
-      var words = seconds < 45 && sprintf($l.seconds, Math.round(seconds)) ||
-        seconds < 90 && $l.minute ||
-        minutes < 45 && sprintf($l.minutes, Math.round(minutes)) ||
-        minutes < 90 && $l.hour ||
-        hours < 24 && sprintf($l.hours, Math.round(hours)) ||
-        hours < 48 && $l.day ||
-        days < 30 && sprintf($l.days, Math.floor(days)) ||
-        days < 60 && $l.month ||
-        days < 365 && sprintf($l.months, Math.floor(days / 30)) ||
-        years < 2 && $l.year ||
-        sprintf($l.years, Math.floor(years));
+      //i don't know if we need to round it here.
+      var rseconds = Math.round(seconds);
+      var rminutes = Math.round(minutes);
+      var rhours   = Math.round(hours);
+      var rdays    = Math.round(days);
+      var rmonths  = Math.round(days / 30);
+      var ryears   = Math.round(years);
+
+      var words = seconds < 45 && sprintf($l('seconds', rseconds), rseconds) ||
+        seconds < 90 && $l('minute', 1) ||
+        minutes < 45 && sprintf($l('minutes', rminutes), rminutes) ||
+        minutes < 90 && $l('hour', 1) ||
+        hours < 24 && sprintf($l('hours', rhours), rhours) ||
+        hours < 48 && $l('day', 1) ||
+        days < 30 && sprintf($l('days', rdays), rdays) ||
+        days < 60 && $l('month') ||
+        days < 365 && sprintf($l('months', rmonths), rmonths) ||
+        years < 2 && $l('year') ||
+        sprintf($l('years', ryears), ryears);
 
       return $.trim([prefix, words, suffix].join(" "));
     },
@@ -83,6 +92,11 @@
       s = s.replace(/T/," ").replace(/Z/," UTC");
       s = s.replace(/([\+-]\d\d)\:?(\d\d)/," $1$2"); // -04:00 -> -0400
       return new Date(s);
+    },
+    translate_string: function(key, val) {
+      var str = this.settings.strings[key];
+      console.log(key, str, val, isFunction(str));
+      return (isFunction(str) ? str.apply(this, val) : str);
     }
   });
 
@@ -116,6 +130,10 @@
   // lame sprintf implementation
   function sprintf(string, value) {
     return string.replace(/%d/i, value);
+  }
+
+  function isFunction(object) {
+    return typeof object == "function";
   }
 
   // fix for IE6 suckage
