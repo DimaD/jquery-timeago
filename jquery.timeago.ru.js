@@ -32,6 +32,6 @@
     month: "месяц",
     months: function(value) { return numpf(value, "%d месяц", "%d месяца", "%d месяцев"); },
     year: "год",
-    years: function(value) { return numpf(value, "%d год", "%d года", "%d лет"); },
+    years: function(value) { return numpf(value, "%d год", "%d года", "%d лет"); }
   };
 })();
